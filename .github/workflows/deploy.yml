@@ -1,0 +1,35 @@
+name: Deploy to AWS Lambda
+
+on:
+  push:
+    branches:
+      - Emanuelo   # Dies ist der Branch, von dem die Änderungen kommen (Emanuelo in deinem Fall)
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js environment
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'   # Ändere dies, je nach deiner Node.js-Version
+
+    - name: Install dependencies
+      run: npm install   # Installiert die Abhängigkeiten (falls vorhanden)
+
+    - name: Zip Lambda function
+      run: zip -r function.zip .   # Packt deinen Lambda-Code in eine ZIP-Datei
+
+    - name: Deploy to AWS Lambda
+      uses: aws-actions/aws-lambda-deploy@v1.1.0
+      with:
+        function-name: CustomerSupportChatbot  # Ändere das zu deinem tatsächlichen Lambda-Funktionsnamen
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: eu-central-1   # Passe die Region an, in der deine Lambda-Funktion gehostet wird
+        zip-file: function.zip   # Die ZIP-Datei, die hochgeladen wird
+
